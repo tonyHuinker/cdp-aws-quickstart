@@ -1,1 +1,1 @@
-# cdp-polciies-cloudformation
+# cdp-aws-quickstart
