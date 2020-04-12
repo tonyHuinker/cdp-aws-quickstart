@@ -2,12 +2,12 @@
   "Parameters" : {
     "S3BucketName" : {
       "Type" : "String",
-      "Default" : "REPLACE ME",
+      "Default" : "tonyh-cdp-bucket",
       "Description" : "New S3 Bucket w/ Default Encryption for ÇDP"
     },
     "AWSAccount" : {
       "Type" : "String",
-      "Default" : "REPLACE ME",
+      "Default" : "981304421142",
       "MaxLength" : 12,
       "MinLength" : 12,
       "Description" : "Your AWS Account ID"
@@ -19,26 +19,26 @@
     },
     "prefix" : {
       "Type" : "String",
-      "Default" : "cdp",
-      "Description" : "prefix(preferrably short) for IAM objects (e.g. cdp or usw1) will be separated by an underscore _"
+      "Default" : "tonyh-cdp",
+      "Description" : "prefix(preferrably short) for IAM objects (e.g. cdp or usw1) will be separated by an dash -"
     }
   },
   "Resources": {
-    "cdp-s3-bucket": {
+    "CDPS3Bucket": {
       "Type" : "AWS::S3::Bucket",
       "Properties" : {
           "BucketEncryption" : {
             "ServerSideEncryptionConfiguration": [{
-            "ServerSideEncryptionByDefault": {
-              "SSEAlgorithm": "AES256"
-            }
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
             }]
-          }
-          "BucketName" : {"Ref" : "S3BucketName"},
+          },
+          "BucketName" : {"Ref" : "S3BucketName"}
       }
     },
-    "idbroker-assume-role-policy": {
-      "Type" : "AWS::IAM::Policy",
+    "IDbrokerAssumeRolePolicy": {
+      "Type" : "AWS::IAM::ManagedPolicy",
       "Properties" : {
           "PolicyDocument" : {
             "Version": "2012-10-17",
@@ -55,7 +55,7 @@
                 }
             ]
           },
-          "PolicyName" :
+          "ManagedPolicyName" :
           {
            "Fn::Join" : [
                           "_", [
@@ -68,8 +68,8 @@
         }
       }
     },
-    "bucket-access-policy": {
-      "Type" : "AWS::IAM::Policy",
+    "BucketAccessPolicy": {
+      "Type" : "AWS::IAM::ManagedPolicy",
       "Properties" : {
           "PolicyDocument" : {
             "Version": "2012-10-17",
@@ -120,7 +120,7 @@
                 "Resource": [
                   {
                     "Fn::Join" : [
-                                    "", [
+                                    "",[
                                       "arn:aws:s3:::",
                                       {
                                         "Ref" : "S3BucketName"
@@ -137,26 +137,27 @@
                                       },
                                       "/*"
                                       ]
-                                    ]
+                                  ]
                   }
-              ]
-            }
+                ]
+              }
+            ]
           },
-          "PolicyName" :
+          "ManagedPolicyName" :
             {
                "Fn::Join" : [
                               "-", [
                                 {
                                   "Ref" : "prefix"
                                 },
-                                "cdp-bucket-access-policy"
+                                "bucket-access-policy"
                                 ]
                               ]
             }
       }
     },
-    "dynamodb-policy": {
-      "Type" : "AWS::IAM::Policy",
+    "DynamoDBPolicy": {
+      "Type" : "AWS::IAM::ManagedPolicy",
       "Properties" : {
           "PolicyDocument" : {
             "Version": "2012-10-17",
@@ -202,7 +203,7 @@
               }
             ]
           },
-          "PolicyName" :
+          "ManagedPolicyName" :
             {
                "Fn::Join" : [
                               "-", [
@@ -213,10 +214,11 @@
                                 ]
                               ]
             }
+
       }
     },
-    "log-policy": {
-      "Type" : "AWS::IAM::Policy",
+    "LogPolicy": {
+      "Type" : "AWS::IAM::ManagedPolicy",
       "Properties" : {
           "PolicyDocument" : {
             "Version": "2012-10-17",
@@ -261,7 +263,7 @@
               }
             ]
           },
-          "PolicyName" :
+          "ManagedPolicyName" :
             {
                "Fn::Join" : [
                               "-", [
@@ -274,8 +276,8 @@
             }
       }
     },
-    "ranger-audit-s3-policy": {
-      "Type" : "AWS::IAM::Policy",
+    "RangerAuditS3Policy": {
+      "Type" : "AWS::IAM::ManagedPolicy",
       "Properties" : {
           "PolicyDocument" : {
             "Version": "2012-10-17",
@@ -322,7 +324,7 @@
               }
             ]
           },
-          "PolicyName" :
+          "ManagedPolicyName" :
             {
                "Fn::Join" : [
                               "-", [
@@ -335,8 +337,8 @@
             }
       }
     },
-    "datalake-admin-s3-policy": {
-      "Type" : "AWS::IAM::Policy",
+    "DatalakeAdminS3Policy": {
+      "Type" : "AWS::IAM::ManagedPolicy",
       "Properties" : {
           "PolicyDocument" : {
             "Version": "2012-10-17",
@@ -408,7 +410,7 @@
               }
             ]
           },
-          "PolicyName" :
+          "ManagedPolicyName" :
             {
                "Fn::Join" : [
                               "-", [
@@ -421,78 +423,7 @@
             }
       }
     },
-    "ec2-role-trust-policy": {
-      "Type" : "AWS::IAM::Policy",
-      "Properties" : {
-          "PolicyDocument" : {
-            "Version": "2012-10-17",
-            "Statement": [
-              {
-                "Effect": "Allow",
-                "Principal": {
-                  "Service": "ec2.amazonaws.com"
-                },
-                "Action": "sts:AssumeRole"
-              }
-            ]
-          },
-          "PolicyName" :
-            {
-               "Fn::Join" : [
-                              "-", [
-                                {
-                                  "Ref" : "prefix"
-                                },
-                                "ec2-role-trust-policy"
-                                ]
-                              ]
-            }
-      }
-    },
-    "idbroker-role-trust-policy": {
-      "Type" : "AWS::IAM::Policy",
-      "Properties" : {
-          "PolicyDocument" : {
-            "Version": "2012-10-17",
-            "Statement": [
-              {
-                "Effect": "Allow",
-                "Principal": {
-                  "AWS":
-                    {
-                       "Fn::Join" : [
-                                      "", [
-                                        "arn:aws:iam::",
-                                        {
-                                          "Ref" : "AWSAccount"
-                                        },
-                                        ":role/",
-                                        {
-                                          "Ref" : "idbroker-role"
-                                        },
-                                        ]
-                                      ]
-                    }
-
-                },
-                "Action": "sts:AssumeRole"
-              }
-            ]
-          },
-          "PolicyName" :
-            {
-               "Fn::Join" : [
-                              "-", [
-                                {
-                                  "Ref" : "prefix"
-                                },
-                                "idbroker-role-trust-policy"
-                                ]
-                              ]
-            }
-      }
-    },
-    "idbroker-role": {
+    "IDBrokerRole": {
       "Type" : "AWS::IAM::Role",
       "Properties" : {
           "AssumeRolePolicyDocument" :{
@@ -508,7 +439,7 @@
             ]
           },
           "Description" : "allows cdp to assume roles",
-          "ManagedPolicyArns" : [{"Ref": "idbroker-assume-role-policy"} ],
+          "ManagedPolicyArns" : [{"Ref": "IDbrokerAssumeRolePolicy"} ],
           "RoleName" :
             {
                "Fn::Join" : [
@@ -522,7 +453,7 @@
             }
       }
     },
-    "log-role": {
+    "LogRole": {
       "Type" : "AWS::IAM::Role",
       "Properties" : {
           "AssumeRolePolicyDocument" :{
@@ -538,7 +469,7 @@
             ]
           },
           "Description" : "used by CDP to write logs",
-          "ManagedPolicyArns" : [{"Ref": "cdp-log-policy"} ],
+          "ManagedPolicyArns" : [{"Ref": "LogPolicy"} ],
           "RoleName" :
             {
                "Fn::Join" : [
@@ -552,7 +483,7 @@
             }
       }
     },
-    "ranger-audit-role": {
+    "RangerAuditRole": {
       "Type" : "AWS::IAM::Role",
       "Properties" : {
           "AssumeRolePolicyDocument" :{
@@ -571,8 +502,9 @@
                                         },
                                         ":role/",
                                         {
-                                          "Ref" : "idbroker-role"
+                                          "Ref" : "prefix"
                                         },
+                                        "-idbroker-role"
                                         ]
                                       ]
                     }
@@ -583,7 +515,7 @@
             ]
           },
           "Description" : "Used by CDP to write ranger audits",
-          "ManagedPolicyArns" : [{"Ref": "ranger-audit-s3-policy"},{"Ref": "bucket-access-policy"},{"Ref": "dynamodb-policy"} ],
+          "ManagedPolicyArns" : [{"Ref": "RangerAuditS3Policy"},{"Ref": "BucketAccessPolicy"},{"Ref": "DynamoDBPolicy"} ],
           "RoleName" :
             {
                "Fn::Join" : [
@@ -595,9 +527,10 @@
                                 ]
                               ]
             }
-      }
+      },
+      "DependsOn" : "IDBrokerRole"
     },
-    "datalake-admin-role": {
+    "DatalakeAdminRole": {
       "Type" : "AWS::IAM::Role",
       "Properties" : {
           "AssumeRolePolicyDocument" :{
@@ -616,8 +549,8 @@
                                         },
                                         ":role/",
                                         {
-                                          "Ref" : "idbroker-role"
-                                        },
+                                          "Ref" : "IDBrokerRole"
+                                        }
                                         ]
                                       ]
                     }
@@ -628,7 +561,7 @@
             ]
           },
           "Description" : "Map to Datalake Admin Group",
-          "ManagedPolicyArns" : [{"Ref": "datalake-admin-s3-policy"},{"Ref": "bucket-access-policy"},{"Ref": "dynamodb-policy"} ],
+          "ManagedPolicyArns" : [{"Ref": "DatalakeAdminS3Policy"},{"Ref": "BucketAccessPolicy"},{"Ref": "DynamoDBPolicy"} ],
           "RoleName" :
             {
                "Fn::Join" : [
@@ -640,7 +573,8 @@
                                 ]
                               ]
             }
-      }
+      },
+      "DependsOn" : "IDBrokerRole"
     }
   }
 }
