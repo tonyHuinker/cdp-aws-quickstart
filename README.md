@@ -1,6 +1,6 @@
 # cdp-aws-quickstart
 
-[[place holder for cdp home screen]]
+![CDP Landing Page](https://github.infra.cloudera.com/tonyh/cdp-aws-quickstart/blob/master/screenshots/landingpage.png?raw=true)
 
 If you've reached the above landing page for the first time, you've come to the right place! In this quickstart, we're going to walkthrough step by step how to connect CDP to your AWS account so that you can begin to provision clusters and workloads. 
 
