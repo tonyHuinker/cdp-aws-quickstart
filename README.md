@@ -11,7 +11,7 @@ In order to complete this quickstart, you'll need access to two things.
 
    
 
-####Step 1. Creating a CDP Credential
+#### Step 1. Creating a CDP Credential
 
   - In the CDP Console, the first thing we're going to do is create our CDP Credential.  The CDP credential is the mechanism that allows CDP to create resources inside your Cloud Account.  
     1. From the CDP Home Screen, click the **Management Console** icon. 
@@ -48,7 +48,7 @@ In order to complete this quickstart, you'll need access to two things.
   1. Give your CDP Credentail a name and descriptino.  The name can be any valid name. 
   2. Paste the *role ARN* you copied from the AWS management console, and paste it into the **Cross-account Role ARN**
 
-####Step 2. Creating a CDP Environment 
+#### Step 2. Creating a CDP Environment 
 
   - We'll want to create specific IAM roles and Policys for CDP to operate in a secure manner.  For background info, a description of what we're building and why can found [here](https://docs.cloudera.com/management-console/cloud/environments/topics/mc-idbroker-minimum-setup.html).  For this quickstart, we'll be using Cloudformation to set all of this up for you.
       1.  Download the provided Cloudformation template [here](https://github.infra.cloudera.com/raw/tonyh/cdp-aws-quickstart/master/cloudformation/setup.json)
