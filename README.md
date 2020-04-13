@@ -22,7 +22,7 @@ In order to complete this quickstart, you'll need access to two things.
 ![CDP Credential Page](https://github.infra.cloudera.com/tonyh/cdp-aws-quickstart/blob/master/screenshots/credential.png?raw=true)
     
 
-- In the AWS Console (keep the CDP screen open a different tab or window), we're going to create the policy that will be used applied to the CDP role. 
+- In the AWS Console (keep the CDP screen open a different tab or window), we're going to create the policy that will be applied to the CDP role. 
    
    1. In AWS, navigate to **IAM**
    2. Click on **Policies**
