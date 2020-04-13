@@ -2,7 +2,7 @@
   "Parameters" : {
     "S3BucketName" : {
       "Type" : "String",
-      "Default" : "ajh-cdp-bucket",
+      "Default" : "my-cdp-bucket",
       "Description" : "New S3 Bucket w/ Default Encryption for ÇDP"
     },
     "AWSAccount" : {
@@ -12,14 +12,9 @@
       "MinLength" : 12,
       "Description" : "Your AWS Account ID"
     },
-    "AWSRegion" : {
-      "Type" : "String",
-      "Default" : "us-east-2",
-      "Description" : "Region you'd like CDP to run in"
-    },
     "prefix" : {
       "Type" : "String",
-      "Default" : "ajh-cdp",
+      "Default" : "cloudera",
       "Description" : "prefix for IAM objects, sep by a dash.  Dynamo table will be prefix-dynamodb-table"
     }
   },
