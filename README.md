@@ -19,6 +19,9 @@ In order to complete this quickstart, you'll need access to two things.
     3. From there, in the top left choose **Shared Resources**, then **Credentials**
     4. Click on the **Create Credential** button on the top right.
 
+![CDP Credential Page](https://github.infra.cloudera.com/tonyh/cdp-aws-quickstart/blob/master/screenshots/credential.png?raw=true)
+    
+
 - In the AWS Console (keep the CDP screen open a different tab or window), we're going to create the policy that will be used applied to the CDP role. 
    
    1. In AWS, navigate to **IAM**
@@ -44,9 +47,16 @@ In order to complete this quickstart, you'll need access to two things.
    13. Staying in the role page in the *AWS Console*, search for the role you just created, and **click on it**
    14. At the top of the screen, copy the **Role ARN**
 
+![Copy Role ARN](https://github.infra.cloudera.com/tonyh/cdp-aws-quickstart/blob/master/screenshots/copyrolearn.png?raw=true)
+
+   
+
 - Head back to the CDP Management console for the final steps in creating the credntial. 
   1. Give your CDP Credentail a name and descriptino.  The name can be any valid name. 
   2. Paste the *role ARN* you copied from the AWS management console, and paste it into the **Cross-account Role ARN**
+
+![Paste Role ARN](https://github.infra.cloudera.com/tonyh/cdp-aws-quickstart/blob/master/screenshots/pasterolearn.png?raw=true)
+
 
 #### Step 2. Creating a CDP Environment 
 
