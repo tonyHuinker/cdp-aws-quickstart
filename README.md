@@ -57,10 +57,11 @@ In order to complete this quickstart, you'll need access to two things.
         - AWSAccount - Your AWS Account ID
         - prefix - prefix to apply to all IAM Objects.
       3. Keep track of the following items, as they'll be inputs during the next step
-      	 - prefix-LogRole
-      	 - prefix-data-access-instance-profile
       	 - prefix-log-access-instance-profile
-      	 - prefix-
+      	 - S3BucketName
+      	 - prefix-ranger-audit-role
+      	 - prefix-data-access-instance-profile
+      	 - prefix-datalake-admin-role
 - In the *AWS Console*, we're now going to deploy our Cloudformation template.  
      1. In *AWS Services*, search for **Cloudformation**
      2. Click **Create Stack** in the top right
