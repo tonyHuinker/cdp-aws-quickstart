@@ -7,14 +7,14 @@
     },
     "AWSAccount" : {
       "Type" : "String",
-      "Default" : "replaceme",
+      "Default" : "replace-me",
       "MaxLength" : 12,
       "MinLength" : 12,
       "Description" : "Your AWS Account ID, 12 digit number"
     },
     "prefix" : {
-      "Type" : "replaceme",
-      "Default" : "cloudera",
+      "Type" : "String",
+      "Default" : "replace-me",
       "Description" : "prefix for IAM objects, sep by a dash.  Dynamo table will be prefix-dynamodb-table"
     }
   },
