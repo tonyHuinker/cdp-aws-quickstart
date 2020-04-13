@@ -2,7 +2,7 @@
   "Parameters" : {
     "S3BucketName" : {
       "Type" : "String",
-      "Default" : "tonyh-cdp-bucket",
+      "Default" : "ajh-cdp-bucket",
       "Description" : "New S3 Bucket w/ Default Encryption for ÇDP"
     },
     "AWSAccount" : {
@@ -19,7 +19,7 @@
     },
     "prefix" : {
       "Type" : "String",
-      "Default" : "tonyh-cdp",
+      "Default" : "ajh-cdp",
       "Description" : "prefix for IAM objects, sep by a dash.  Dynamo table will be prefix-dynamodb-table"
     }
   },
@@ -586,7 +586,7 @@
                                 {
                                   "Ref" : "prefix"
                                 },
-                                "data-access-profile"
+                                "data-access-instance-profile"
                                 ]
                               ]
             },
