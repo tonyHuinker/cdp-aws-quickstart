@@ -14,7 +14,7 @@
     },
     "AWSRegion" : {
       "Type" : "String",
-      "Default" : "us-west-1",
+      "Default" : "us-east-2",
       "Description" : "Region you'd like CDP to run in"
     },
     "prefix" : {
@@ -575,6 +575,42 @@
             }
       },
       "DependsOn" : "IDBrokerRole"
+    },
+    "DataAccessInstanceProfile": {
+    "Type" : "AWS::IAM::InstanceProfile",
+    "Properties" : {
+        "InstanceProfileName" :
+            {
+               "Fn::Join" : [
+                              "-", [
+                                {
+                                  "Ref" : "prefix"
+                                },
+                                "data-access-profile"
+                                ]
+                              ]
+            },
+        "Roles" : [{"Ref" : "IDBrokerRole"}]
+      },
+      "DependsOn" : "IDBrokerRole"
+    },
+    "LogAccessInstanceProfile": {
+    "Type" : "AWS::IAM::InstanceProfile",
+    "Properties" : {
+        "InstanceProfileName" :
+            {
+               "Fn::Join" : [
+                              "-", [
+                                {
+                                  "Ref" : "prefix"
+                                },
+                                "log-access-instance-profile"
+                                ]
+                              ]
+            },
+        "Roles" : [{"Ref" : "LogRole"}]
+      },
+      "DependsOn" : "LogRole"
     }
   }
 }
