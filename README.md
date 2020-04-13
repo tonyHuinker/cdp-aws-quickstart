@@ -73,6 +73,13 @@ In order to complete this quickstart, you'll need access to two things.
      8. At the bottom of *Review page*, under capabilities, we need to click the checkbox next to **I acknowledge that AWS Cloudformation might create IAM resources with custom names**, as that is exactly what we will be doing.
      9. Click **Create stack**
 
+- One last thing, in the *AWS Console*, is we'll want to create an SSH Key in the region of your choice.  If there is already an SSH key in your perferred region you'd like to use, you can skip these steps.  
+   1. In *AWS Services*, search for **EC2**
+   2. Double check you are in your preferred region in the top right corner. 
+   3. On the left hand navigation bar, choose **Key Pairs**
+   4. On the top right, choose "Create Key Pair**
+   5. Provide *Name* and choose **pem** format.  The name can be any valid name.
+
 - Back in the *CDP Management Console*
     1. Navigate to **Environments**
     2. Click **Register Environment**
