@@ -2,18 +2,18 @@
   "Parameters" : {
     "S3BucketName" : {
       "Type" : "String",
-      "Default" : "my-cdp-bucket",
+      "Default" : "replace-me",
       "Description" : "New S3 Bucket w/ Default Encryption for ÇDP"
     },
     "AWSAccount" : {
       "Type" : "String",
-      "Default" : "981304421142",
+      "Default" : "replaceme",
       "MaxLength" : 12,
       "MinLength" : 12,
-      "Description" : "Your AWS Account ID"
+      "Description" : "Your AWS Account ID, 12 digit number"
     },
     "prefix" : {
-      "Type" : "String",
+      "Type" : "replaceme",
       "Default" : "cloudera",
       "Description" : "prefix for IAM objects, sep by a dash.  Dynamo table will be prefix-dynamodb-table"
     }
