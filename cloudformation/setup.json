@@ -446,7 +446,8 @@
                                 ]
                               ]
             }
-      }
+      },
+      "DependsOn" : "IDbrokerAssumeRolePolicy"
     },
     "LogRole": {
       "Type" : "AWS::IAM::Role",
@@ -476,7 +477,8 @@
                                 ]
                               ]
             }
-      }
+      },
+      "DependsOn" : "LogPolicy"
     },
     "RangerAuditRole": {
       "Type" : "AWS::IAM::Role",
@@ -523,7 +525,7 @@
                               ]
             }
       },
-      "DependsOn" : "IDBrokerRole"
+      "DependsOn" : ["IDBrokerRole", "RangerAuditS3Policy", "BucketAccessPolicy", "DynamoDBPolicy"]
     },
     "DatalakeAdminRole": {
       "Type" : "AWS::IAM::Role",
