@@ -52,7 +52,7 @@ In order to complete this quickstart, you'll need access to two things.
    
 
 - Head back to the CDP Management console for the final steps in creating the credntial. 
-  1. Give your CDP Credentail a name and descriptino.  The name can be any valid name. 
+  1. Give your CDP Credential a name and description.  The name can be any valid name. 
   2. Paste the *role ARN* you copied from the AWS management console, and paste it into the **Cross-account Role ARN**
 
 ![Paste Role ARN](https://github.infra.cloudera.com/tonyh/cdp-aws-quickstart/blob/master/screenshots/pasterolearn.png?raw=true)
@@ -60,45 +60,30 @@ In order to complete this quickstart, you'll need access to two things.
 
 #### Step 2. Creating a CDP Environment 
 
-  - We'll want to create specific IAM roles and Policys for CDP to operate in a secure manner.  For background info, a description of what we're building and why can found [here](https://docs.cloudera.com/management-console/cloud/environments/topics/mc-idbroker-minimum-setup.html).  For this quickstart, we'll be using Cloudformation to set all of this up for you.
-      1.  Download the provided Cloudformation template [here](https://github.infra.cloudera.com/raw/tonyh/cdp-aws-quickstart/master/cloudformation/setup.json)
-      2. Change the following parameters. 
-        - S3BucketName - New S3 Bucket for CDP
-        - AWSAccount - Your AWS Account ID
-        - prefix - prefix to apply to all IAM Objects.
-      3. Keep track of the following items, as they'll be inputs during the next step
-      	 - prefix-log-access-instance-profile
-      	 - S3BucketName
-      	 - prefix-ranger-audit-role
-      	 - prefix-data-access-instance-profile
-      	 - prefix-datalake-admin-role.
-      	 - prefix-dynamodb-table 
-      	 
-![Paremter Setup](https://github.infra.cloudera.com/tonyh/cdp-aws-quickstart/blob/master/screenshots/parameters.png?raw=true). 
+  - We'll want to create specific IAM roles and Policys for CDP to operate in a secure manner.  For background info, a description of what we're building and why can found [here](https://docs.cloudera.com/management-console/cloud/environments/topics/mc-idbroker-minimum-setup.html).  To make thing easy, we've created a cloudformation script to create the necessary IAM roles and Policies.  To deploy, click the link below. 
 
-For example.. if we made the above changes to the Cloudformation template.. then we would keep the following to use later. 
+<a href="https://us-east-2.console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/create/review?templateURL=https://github.infra.cloudera.com/raw/tonyh/cdp-aws-quickstart/master/cloudformation/setup.json/&stackName=MyCDPStack" target="_blank">
+    <img src="https://github.infra.cloudera.com/tonyh/cdp-aws-quickstart/blob/master/screenshots/deploy-link.png?raw=true" style="width:200px;height:40px;" class="right" />
+</a>
 
-![Things to keep](https://github.infra.cloudera.com/tonyh/cdp-aws-quickstart/blob/master/screenshots/keep.png?raw=true). 
-
-
-
-
+- Inside the Cloudformation wizard, update the paramters with your desired values for S3 Bucket name, AWS Account ID, and prefix.  The S3 bucket and prefix are of your own choosing, you can find your AWS account ID [here](https://console.aws.amazon.com/billing/home?#/account) It will be important ot keep track of the following things.
+    1. prefix-log-access-instance-profile
+    2. prefix-ranger-audit-role
+    3. s3bucketname
+    4. prefix-data-access-instance-profile
+    5. prefix-datalake-admin-role
+    6. prefix-dynamodb-table
+    
 - In the *AWS Console*, we're now going to deploy our Cloudformation template.  
-     1. In *AWS Services*, search for **Cloudformation**
-     2. Click **Create Stack** in the top right
-     3. Choose **template is ready**, and **upload a template file**
-       ![Create Stack](https://github.infra.cloudera.com/tonyh/cdp-aws-quickstart/blob/master/screenshots/createstack.png?raw=true). 
-
-     4. Select the template we modified with your parameters above.
-     5. Click **Next**
-     6. Enter your stack name.  This can be any valid name. Also, the paremeters of the template should be visable at this stage.  Click **Next**
+     1. Optionally, change your stack name.  This can be any valid name. Also, the paremeters of the template should be visable at this stage.  
        ![parsed](https://github.infra.cloudera.com/tonyh/cdp-aws-quickstart/blob/master/screenshots/stackparsed.png?raw=true).  
 
-     7. At the *Configure Stack Options8 page, click **Next**
-     8. At the bottom of *Review page*, under capabilities, we need to click the checkbox next to **I acknowledge that AWS Cloudformation might create IAM resources with custom names**, as that is exactly what we will be doing.
+     2. Update the paramters to your desired values for S3 Bucket Name, AWS Accound ID, and prefix. Click **Next**
+     3. At the *Configure Stack Options8 page, click **Next**
+     4. At the bottom of *Review page*, under capabilities, we need to click the checkbox next to **I acknowledge that AWS Cloudformation might create IAM resources with custom names**, as that is exactly what we will be doing.
        ![Ackknowledge](https://github.infra.cloudera.com/tonyh/cdp-aws-quickstart/blob/master/screenshots/ack.png?raw=true).  
 
-     9. Click **Create stack**
+     5. Click **Create stack**
 
 
 
