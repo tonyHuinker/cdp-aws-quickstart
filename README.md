@@ -1,6 +1,6 @@
 # cdp-aws-quickstart
 
-![CDP Landing Page](https://github.infra.cloudera.com/tonyh/cdp-aws-quickstart/blob/master/screenshots/landingpage.png?raw=true)
+![CDP Landing Page](https://github.com/tonyHuinker/cdp-aws-quickstart/blob/master/screenshots/landingpage.png?raw=true)
 
 If you've reached the above landing page for the first time, you've come to the right place! In this quickstart, we're going to walkthrough step by step how to connect CDP to your AWS account so that you can begin to provision clusters and workloads. 
 
@@ -19,7 +19,7 @@ In order to complete this quickstart, you'll need access to two things.
     3. From there, in the top left choose **Shared Resources**, then **Credentials**
     4. Click on the **Create Credential** button on the top right.
 
-![CDP Credential Page](https://github.infra.cloudera.com/tonyh/cdp-aws-quickstart/blob/master/screenshots/credential.png?raw=true)
+![CDP Credential Page](https://github.com/tonyHuinker/cdp-aws-quickstart/blob/master/screenshots/credential.png?raw=true)
     
 
 - In the AWS Console (keep the CDP screen open a different tab or window), we're going to create the policy that will be applied to the CDP role. 
@@ -47,7 +47,7 @@ In order to complete this quickstart, you'll need access to two things.
    13. Staying in the role page in the *AWS Console*, search for the role you just created, and **click on it**
    14. At the top of the screen, copy the **Role ARN**
 
-![Copy Role ARN](https://github.infra.cloudera.com/tonyh/cdp-aws-quickstart/blob/master/screenshots/copyrolearn.png?raw=true)
+![Copy Role ARN](https://github.com/tonyHuinker/cdp-aws-quickstart/blob/master/screenshots/copyrolearn.png?raw=true)
 
    
 
@@ -55,54 +55,40 @@ In order to complete this quickstart, you'll need access to two things.
   1. Give your CDP Credentail a name and descriptino.  The name can be any valid name. 
   2. Paste the *role ARN* you copied from the AWS management console, and paste it into the **Cross-account Role ARN**
 
-![Paste Role ARN](https://github.infra.cloudera.com/tonyh/cdp-aws-quickstart/blob/master/screenshots/pasterolearn.png?raw=true)
+![Paste Role ARN](https://github.com/tonyHuinker/cdp-aws-quickstart/blob/master/screenshots/pasterolearn.png?raw=true)
 
 
 #### Step 2. Creating a CDP Environment 
 
   - We'll want to create specific IAM roles and Policys for CDP to operate in a secure manner.  For background info, a description of what we're building and why can found [here](https://docs.cloudera.com/management-console/cloud/environments/topics/mc-idbroker-minimum-setup.html).  For this quickstart, we'll be using Cloudformation to set all of this up for you.
-      1.  Download the provided Cloudformation template [here](https://github.infra.cloudera.com/raw/tonyh/cdp-aws-quickstart/master/cloudformation/setup.json)
-      2. Change the following parameters. 
-        - S3BucketName - New S3 Bucket for CDP
-        - AWSAccount - Your AWS Account ID
-        - prefix - prefix to apply to all IAM Objects.
-      3. Keep track of the following items, as they'll be inputs during the next step
-      	 - prefix-log-access-instance-profile
-      	 - S3BucketName
-      	 - prefix-ranger-audit-role
-      	 - prefix-data-access-instance-profile
-      	 - prefix-datalake-admin-role.
-      	 - prefix-dynamodb-table 
-      	 
-![Paremter Setup](https://github.infra.cloudera.com/tonyh/cdp-aws-quickstart/blob/master/screenshots/parameters.png?raw=true). 
-
-For example.. if we made the above changes to the Cloudformation template.. then we would keep the following to use later. 
-
-![Things to keep](https://github.infra.cloudera.com/tonyh/cdp-aws-quickstart/blob/master/screenshots/keep.png?raw=true). 
-
+      - Download the provided Cloudformation template [here](https://raw.githubusercontent.com/tonyHuinker/cdp-aws-quickstart/master/cloudformation/setup.json) 
 
 
 
 - In the *AWS Console*, we're now going to deploy our Cloudformation template.  
      1. In *AWS Services*, search for **Cloudformation**
      2. Click **Create Stack** in the top right
-     3. Choose **template is ready**, and **upload a template file**
-       ![Create Stack](https://github.infra.cloudera.com/tonyh/cdp-aws-quickstart/blob/master/screenshots/createstack.png?raw=true). 
+     3. Choose **template is ready**, and **upload a template file** ![Create Stack](https://github.com/tonyHuinker/cdp-aws-quickstart/blob/master/screenshots/createstack.png?raw=true). 
 
-     4. Select the template we modified with your parameters above.
+     4. Select the template file you just downloaded.
      5. Click **Next**
-     6. Enter your stack name.  This can be any valid name. Also, the paremeters of the template should be visable at this stage.  Click **Next**
-       ![parsed](https://github.infra.cloudera.com/tonyh/cdp-aws-quickstart/blob/master/screenshots/stackparsed.png?raw=true).  
+     6. Enter your stack name.  This can be any valid name.  Below you should change
+        - S3BucketName - choose an unused bucket name, CDP will be creating the bucket for you
+        - AWSAccount - your 12 digit AWS account ID (can be found [here](https://console.aws.amazon.com/billing/home?#/account). 
+        - prefix - a short prefix of your choosing to add to the names of the IAM resources we'll be creating. 
+         
+        ![parsed](https://github.com/tonyHuinker/cdp-aws-quickstart/blob/master/screenshots/stackparsed.png?raw=true).  
 
-     7. At the *Configure Stack Options8 page, click **Next**
-     8. At the bottom of *Review page*, under capabilities, we need to click the checkbox next to **I acknowledge that AWS Cloudformation might create IAM resources with custom names**, as that is exactly what we will be doing.
-       ![Ackknowledge](https://github.infra.cloudera.com/tonyh/cdp-aws-quickstart/blob/master/screenshots/ack.png?raw=true).  
+	 7. Click **Next**. 
+     8. At the *Configure Stack Options8 page, click **Next**
+     9. At the bottom of *Review page*, under capabilities, we need to click the checkbox next to **I acknowledge that AWS Cloudformation might create IAM resources with custom names**, as that is exactly what we will be doing.
+       ![Ackknowledge](https://github.com/tonyHuinker/cdp-aws-quickstart/blob/master/screenshots/ack.png?raw=true).  
 
-     9. Click **Create stack**
+     10. Click **Create stack**
 
 
 
-- One last thing, in the *AWS Console*, is we'll want to create an SSH Key in the region of your choice.  If there is already an SSH key in your perferred region you'd like to use, you can skip these steps.  
+- One last thing, in the *AWS Console*, we'll want to create an SSH Key in the region of your choice.  If there is already an SSH key in your perferred region you'd like to use, you can skip these steps.  
    1. In *AWS Services*, search for **EC2**
    2. Double check you are in your preferred region in the top right corner. 
    3. On the left hand navigation bar, choose **Key Pairs**
@@ -122,14 +108,14 @@ For example.. if we made the above changes to the Cloudformation template.. then
     10. Choose your desired **region**, this should be the same region you created an SSH Key in above. 
     11. Under *select network* choose **Create New Network**
     12. Under *Security Access Settings* choose **Create New Security Groups**
-        ![Region](https://github.infra.cloudera.com/tonyh/cdp-aws-quickstart/blob/master/screenshots/regionnetwork.png?raw=true). 
+        ![Region](https://github.com/tonyHuinker/cdp-aws-quickstart/blob/master/screenshots/regionnetwork.png?raw=true). 
         
     13. Under *SSH Settings*, choose the SSH key created earlier. 
     14. Under *Logs - Storage and Audit*, choose the Instance Profile we mentioned to save earlier, titled **prefix-log-access-instance-profile**, for logs location base choose **S3BucketName/logs**, and for *Ranger Audit Role* choose **prefix-ranger-audit-role**
-        ![logs](https://github.infra.cloudera.com/tonyh/cdp-aws-quickstart/blob/master/screenshots/logs.png?raw=true).
+        ![logs](https://github.com/tonyHuinker/cdp-aws-quickstart/blob/master/screenshots/logs.png?raw=true).
     15.  Under *Data Access*, choose the **prefix-data-access-instance-profile**, for *Storage Location Base* choose **S3Bucketname**. 
-        ![data](https://github.infra.cloudera.com/tonyh/cdp-aws-quickstart/blob/master/screenshots/data.png?raw=true).
+        ![data](https://github.com/tonyHuinker/cdp-aws-quickstart/blob/master/screenshots/data.png?raw=true).
     16. (optional) Provide any tags you'd like these resources to be tagged with. 
     17. Under *Enable S3 Guard*, enter **prefix-dynamodb-table**
-       ![dynamo](https://github.infra.cloudera.com/tonyh/cdp-aws-quickstart/blob/master/screenshots/dynamo.png?raw=true).
+       ![dynamo](https://github.com/tonyHuinker/cdp-aws-quickstart/blob/master/screenshots/dynamo.png?raw=true).
     18. Click **Register Environment**
