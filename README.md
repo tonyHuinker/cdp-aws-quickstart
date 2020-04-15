@@ -27,7 +27,7 @@ In order to complete this quickstart, you'll need access to two things.
    1. In AWS, navigate to **IAM**
    2. Click on **Policies**
    3. Click on **Create policy**
-   4. Choose **json**, and paste the provided json from the *Create Cross-account Access Policy* from the **CDP Management Console**
+   4. Choose **JSON**, and paste the provided json from the *Create Cross-account Access Policy* from the **CDP Management Console**
    5. Click **Review Policy**
    6. Give it a *name and description*. The name can be any valid name.
    7. Click **Create policy**. 
@@ -51,8 +51,8 @@ In order to complete this quickstart, you'll need access to two things.
 
    
 
-- Head back to the CDP Management console for the final steps in creating the credntial. 
-  1. Give your CDP Credentail a name and descriptino.  The name can be any valid name. 
+- Head back to the CDP Management console for the final steps in creating the credential. 
+  1. Give your CDP credential a name and description.  The name can be any valid name. 
   2. Paste the *role ARN* you copied from the AWS management console, and paste it into the **Cross-account Role ARN**
 
 ![Paste Role ARN](https://github.com/tonyHuinker/cdp-aws-quickstart/blob/master/screenshots/pasterolearn.png?raw=true)
@@ -60,13 +60,13 @@ In order to complete this quickstart, you'll need access to two things.
 
 #### Step 2. Creating a CDP Environment 
 
-  - We'll want to create specific IAM roles and Policys for CDP to operate in a secure manner.  For background info, a description of what we're building and why can found [here](https://docs.cloudera.com/management-console/cloud/environments/topics/mc-idbroker-minimum-setup.html).  For this quickstart, we'll be using Cloudformation to set all of this up for you.
-      - Download the provided Cloudformation template [here](https://raw.githubusercontent.com/tonyHuinker/cdp-aws-quickstart/master/cloudformation/setup.json) 
+  - We'll want to create specific IAM roles and policies for CDP to operate in a secure manner.  For background info, a description of what we're building and why can found [here](https://docs.cloudera.com/management-console/cloud/environments/topics/mc-idbroker-minimum-setup.html).  For this quickstart, we'll be using CloudFormation to set all of this up for you.
+      - Download the provided CloudFormation template [here](https://raw.githubusercontent.com/tonyHuinker/cdp-aws-quickstart/master/cloudformation/setup.json) 
 
 
 
-- In the *AWS Console*, we're now going to deploy our Cloudformation template.  
-     1. In *AWS Services*, search for **Cloudformation**
+- In the *AWS Console*, we're now going to deploy our CloudFormation template.  
+     1. In *AWS Services*, search for **CloudFormation**
      2. Click **Create Stack** in the top right
      3. Choose **template is ready**, and **upload a template file** ![Create Stack](https://github.com/tonyHuinker/cdp-aws-quickstart/blob/master/screenshots/createstack.png?raw=true). 
 
@@ -74,25 +74,25 @@ In order to complete this quickstart, you'll need access to two things.
      5. Click **Next**
      6. Enter your stack name.  This can be any valid name.  Below you should change
         - S3BucketName - choose an unused bucket name, CDP will be creating the bucket for you
-        - AWSAccount - your 12 digit AWS account ID (can be found [here](https://console.aws.amazon.com/billing/home?#/account). 
+        - AWSAccount - your 12 digit AWS account ID (can be found [here](https://console.aws.amazon.com/billing/home?#/account)). 
         - prefix - a short prefix of your choosing to add to the names of the IAM resources we'll be creating. 
          
         ![parsed](https://github.com/tonyHuinker/cdp-aws-quickstart/blob/master/screenshots/stackparsed.png?raw=true).  
 
 	 7. Click **Next**. 
-     8. At the *Configure Stack Options8 page, click **Next**
-     9. At the bottom of *Review page*, under capabilities, we need to click the checkbox next to **I acknowledge that AWS Cloudformation might create IAM resources with custom names**, as that is exactly what we will be doing.
-       ![Ackknowledge](https://github.com/tonyHuinker/cdp-aws-quickstart/blob/master/screenshots/ack.png?raw=true).  
+     8. At the *Configure Stack Options* page, click **Next**
+     9. At the bottom of *Review page*, under capabilities, we need to click the checkbox next to **I acknowledge that AWS CloudFormation might create IAM resources with custom names**, as that is exactly what we will be doing.
+       ![Acknowledge](https://github.com/tonyHuinker/cdp-aws-quickstart/blob/master/screenshots/ack.png?raw=true).  
 
      10. Click **Create stack**
 
 
 
-- One last thing, in the *AWS Console*, we'll want to create an SSH Key in the region of your choice.  If there is already an SSH key in your perferred region you'd like to use, you can skip these steps.  
+- One last thing, in the *AWS Console*, we'll want to create an SSH Key in the region of your choice.  If there is already an SSH key in your preferred region you'd like to use, you can skip these steps.  
    1. In *AWS Services*, search for **EC2**
-   2. Double check you are in your preferred region in the top right corner. 
-   3. On the left hand navigation bar, choose **Key Pairs**
-   4. On the top right, choose "Create Key Pair**
+   2. Doublecheck that you are in your preferred region in the top-right corner. 
+   3. On the left-side navigation bar, choose **Key Pairs**
+   4. On the top right, choose **Create Key Pair**
    5. Provide *Name* and choose **pem** format.  The name can be any valid name.
 
 - Back in the *CDP Management Console*
