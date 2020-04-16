@@ -7,7 +7,7 @@
     },
     "AWSAccount" : {
       "Type" : "String",
-      "Default" : "replace-me",
+      "Default" : "111111111111",
       "MaxLength" : 12,
       "MinLength" : 12,
       "Description" : "Your AWS Account ID, 12 digit number"
@@ -29,8 +29,14 @@
               }
             }]
           },
-          "BucketName" : {"Ref" : "S3BucketName"}
-      }
+          "BucketName" : {"Ref" : "S3BucketName"},
+          "PublicAccessBlockConfiguration" : {
+            "BlockPublicAcls" : true,
+            "BlockPublicPolicy" : true,
+            "IgnorePublicAcls" : true,
+            "RestrictPublicBuckets" : true
+          }
+        }
     },
     "IDbrokerAssumeRolePolicy": {
       "Type" : "AWS::IAM::ManagedPolicy",
