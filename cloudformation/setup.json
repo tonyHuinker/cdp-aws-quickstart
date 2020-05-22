@@ -257,7 +257,7 @@
                         {
                           "Ref" : "S3BucketName"
                         },
-                        "/oplogs/*"
+                        "/logs/*"
                         ]
                       ]
                   },
