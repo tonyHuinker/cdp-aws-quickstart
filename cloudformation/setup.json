@@ -249,31 +249,18 @@
                   "s3:ListMultipartUploadParts",
                   "s3:PutObject"
                 ],
-                "Resource":[
-                  {
-                    "Fn::Join" : [
-                      "", [
-                        "arn:aws:s3:::",
-                        {
-                          "Ref" : "S3BucketName"
-                        },
-                        "/logs/*"
-                        ]
-                      ]
-                  },
-                  {
-                    "Fn::Join" : [
-                      "", [
-                        "arn:aws:s3:::",
-                        {
-                          "Ref" : "S3BucketName"
-                        },
-                        "/cluster-backups/*"
-                        ]
-                      ]
-                  }
-                ]
-
+                "Resource":
+                {
+                  "Fn::Join" : [
+                                  "", [
+                                    "arn:aws:s3:::",
+                                    {
+                                      "Ref" : "S3BucketName"
+                                    },
+                                    "/logs/*"
+                                    ]
+                                  ]
+                }
               }
             ]
           },
