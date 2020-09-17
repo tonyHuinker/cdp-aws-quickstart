@@ -1,619 +1,793 @@
 {
-  "Parameters" : {
-    "S3BucketName" : {
-      "Type" : "String",
-      "Default" : "replace-me",
-      "Description" : "New S3 Bucket w/ Default Encryption for ÇDP"
+  "Parameters": {
+    "S3BucketName": {
+      "Type": "String",
+      "Default": "replace-me",
+      "Description": "New S3 Bucket w/ Default Encryption for ÇDP"
     },
-    "AWSAccount" : {
-      "Type" : "String",
-      "Default" : "111111111111",
-      "MaxLength" : 12,
-      "MinLength" : 12,
-      "Description" : "Your AWS Account ID, 12 digit number"
+    "AWSAccount": {
+      "Type": "String",
+      "Default": "111111111111",
+      "MaxLength": 12,
+      "MinLength": 12,
+      "Description": "Your AWS Account ID, 12 digit number"
     },
-    "prefix" : {
-      "Type" : "String",
-      "Default" : "replace-me",
-      "Description" : "prefix for IAM objects, sep by a dash.  Dynamo table will be prefix-dynamodb-table"
+    "prefix": {
+      "Type": "String",
+      "Default": "replace-me",
+      "Description": "prefix for IAM objects, sep by a dash.  Dynamo table will be prefix-dynamodb-table"
+    },
+    "s3KmsEncyption": {
+      "Type": "String",
+      "Default": false,
+      "Description": "If set to True S3 will be configured with AWS managed KMS server side encryption"
+    }
+  },
+  "Conditions": {
+    "kms": {
+      "Fn::Equals": [
+        { "Ref": "s3KmsEncyption" },
+      true
+      ]
     }
   },
   "Resources": {
     "CDPS3Bucket": {
-      "Type" : "AWS::S3::Bucket",
-      "Properties" : {
-          "BucketEncryption" : {
-            "ServerSideEncryptionConfiguration": [{
-              "ServerSideEncryptionByDefault": {
-                "SSEAlgorithm": "AES256"
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": { 
+                "Fn::If": [
+                  "kms",
+                  {
+                    "SSEAlgorithm": "aws:kms",
+                    "KMSMasterKeyID": { "Ref": "CdpKey" }
+                  },
+                  {
+                    "SSEAlgorithm": "AES256"
+                  }
+                ]
               }
-            }]
-          },
-          "BucketName" : {"Ref" : "S3BucketName"},
-          "PublicAccessBlockConfiguration" : {
-            "BlockPublicAcls" : true,
-            "BlockPublicPolicy" : true,
-            "IgnorePublicAcls" : true,
-            "RestrictPublicBuckets" : true
-          }
+            }
+          ]
+        },
+        "BucketName": {
+          "Ref": "S3BucketName"
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
         }
+      }
     },
     "IDbrokerAssumeRolePolicy": {
-      "Type" : "AWS::IAM::ManagedPolicy",
-      "Properties" : {
-          "PolicyDocument" : {
-            "Version": "2012-10-17",
-            "Statement": [
-                {
-                    "Sid": "VisualEditor0",
-                    "Effect": "Allow",
-                    "Action": [
-                        "sts:AssumeRole"
-                    ],
-                    "Resource": [
-                        "*"
-                    ]
-                }
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "VisualEditor0",
+              "Effect": "Allow",
+              "Action": [
+                "sts:AssumeRole"
+              ],
+              "Resource": [
+                "*"
+              ]
+            }
+          ]
+        },
+        "ManagedPolicyName": {
+          "Fn::Join": [
+            "_",
+            [
+              {
+                "Ref": "prefix"
+              },
+              "idbroker-assume-role-policy"
             ]
-          },
-          "ManagedPolicyName" :
-          {
-           "Fn::Join" : [
-                          "_", [
-                            {
-                              "Ref" : "prefix"
-                            },
-                            "idbroker-assume-role-policy"
-                            ]
-                          ]
+          ]
         }
       }
     },
     "BucketAccessPolicy": {
-      "Type" : "AWS::IAM::ManagedPolicy",
-      "Properties" : {
-          "PolicyDocument" : {
-            "Version": "2012-10-17",
-            "Statement": [
-              {
-                "Effect": "Allow",
-                "Action": [
-                  "s3:CreateJob",
-                  "s3:GetAccountPublicAccessBlock",
-                  "s3:HeadBucket",
-                  "s3:ListJobs"
-                ],
-                "Resource": "*"
-              },
-              {
-                "Sid": "AllowListingOfDataLakeFolder",
-                "Effect": "Allow",
-                "Action": [
-                  "s3:GetAccelerateConfiguration",
-                  "s3:GetAnalyticsConfiguration",
-                  "s3:GetBucketAcl",
-                  "s3:GetBucketCORS",
-                  "s3:GetBucketLocation",
-                  "s3:GetBucketLogging",
-                  "s3:GetBucketNotification",
-                  "s3:GetBucketPolicy",
-                  "s3:GetBucketPolicyStatus",
-                  "s3:GetBucketPublicAccessBlock",
-                  "s3:GetBucketRequestPayment",
-                  "s3:GetBucketTagging",
-                  "s3:GetBucketVersioning",
-                  "s3:GetBucketWebsite",
-                  "s3:GetEncryptionConfiguration",
-                  "s3:GetInventoryConfiguration",
-                  "s3:GetLifecycleConfiguration",
-                  "s3:GetMetricsConfiguration",
-                  "s3:GetObject",
-                  "s3:GetObjectAcl",
-                  "s3:GetObjectTagging",
-                  "s3:GetObjectVersion",
-                  "s3:GetObjectVersionAcl",
-                  "s3:GetObjectVersionTagging",
-                  "s3:GetReplicationConfiguration",
-                  "s3:ListBucket",
-                  "s3:ListBucketMultipartUploads",
-                  "s3:ListMultipartUploadParts"
-                ],
-                "Resource": [
-                  {
-                    "Fn::Join" : [
-                                    "",[
-                                      "arn:aws:s3:::",
-                                      {
-                                        "Ref" : "S3BucketName"
-                                      }
-                                      ]
-                                    ]
-                  },
-                  {
-                    "Fn::Join" : [
-                                    "", [
-                                      "arn:aws:s3:::",
-                                      {
-                                        "Ref" : "S3BucketName"
-                                      },
-                                      "/*"
-                                      ]
-                                  ]
-                  }
-                ]
-              }
-            ]
-          },
-          "ManagedPolicyName" :
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
             {
-               "Fn::Join" : [
-                              "-", [
-                                {
-                                  "Ref" : "prefix"
-                                },
-                                "bucket-access-policy"
-                                ]
-                              ]
+              "Effect": "Allow",
+              "Action": [
+                "s3:CreateJob",
+                "s3:GetAccountPublicAccessBlock",
+                "s3:HeadBucket",
+                "s3:ListJobs"
+              ],
+              "Resource": "*"
+            },
+            {
+              "Sid": "AllowListingOfDataLakeFolder",
+              "Effect": "Allow",
+              "Action": [
+                "s3:GetAccelerateConfiguration",
+                "s3:GetAnalyticsConfiguration",
+                "s3:GetBucketAcl",
+                "s3:GetBucketCORS",
+                "s3:GetBucketLocation",
+                "s3:GetBucketLogging",
+                "s3:GetBucketNotification",
+                "s3:GetBucketPolicy",
+                "s3:GetBucketPolicyStatus",
+                "s3:GetBucketPublicAccessBlock",
+                "s3:GetBucketRequestPayment",
+                "s3:GetBucketTagging",
+                "s3:GetBucketVersioning",
+                "s3:GetBucketWebsite",
+                "s3:GetEncryptionConfiguration",
+                "s3:GetInventoryConfiguration",
+                "s3:GetLifecycleConfiguration",
+                "s3:GetMetricsConfiguration",
+                "s3:GetObject",
+                "s3:GetObjectAcl",
+                "s3:GetObjectTagging",
+                "s3:GetObjectVersion",
+                "s3:GetObjectVersionAcl",
+                "s3:GetObjectVersionTagging",
+                "s3:GetReplicationConfiguration",
+                "s3:ListBucket",
+                "s3:ListBucketMultipartUploads",
+                "s3:ListMultipartUploadParts"
+              ],
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "S3BucketName"
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "S3BucketName"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
             }
+          ]
+        },
+        "ManagedPolicyName": {
+          "Fn::Join": [
+            "-",
+            [
+              {
+                "Ref": "prefix"
+              },
+              "bucket-access-policy"
+            ]
+          ]
+        }
       }
     },
     "DynamoDBPolicy": {
-      "Type" : "AWS::IAM::ManagedPolicy",
-      "Properties" : {
-          "PolicyDocument" : {
-            "Version": "2012-10-17",
-            "Statement": [
-              {
-                "Effect": "Allow",
-                "Action": [
-                  "dynamodb:List*",
-                  "dynamodb:DescribeReservedCapacity*",
-                  "dynamodb:DescribeLimits",
-                  "dynamodb:DescribeTimeToLive"
-                ],
-                "Resource": "*"
-              },
-              {
-                "Effect": "Allow",
-                "Action": [
-                  "dynamodb:BatchGetItem",
-                  "dynamodb:BatchWriteItem",
-                  "dynamodb:CreateTable",
-                  "dynamodb:DeleteItem",
-                  "dynamodb:DescribeTable",
-                  "dynamodb:GetItem",
-                  "dynamodb:PutItem",
-                  "dynamodb:Query",
-                  "dynamodb:UpdateItem",
-                  "dynamodb:Scan",
-                  "dynamodb:TagResource",
-                  "dynamodb:UntagResource"
-                ],
-                "Resource":
-                  {
-                    "Fn::Join" : [
-                                    "", [
-                                      "arn:aws:dynamodb:*:*:table/",
-                                      {
-                                        "Ref" : "prefix"
-                                      },
-                                      "-dynamodb-table"
-                                      ]
-                                    ]
-                  }
-              }
-            ]
-          },
-          "ManagedPolicyName" :
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
             {
-               "Fn::Join" : [
-                              "-", [
-                                {
-                                  "Ref" : "prefix"
-                                },
-                                "dynamodb-policy"
-                                ]
-                              ]
+              "Effect": "Allow",
+              "Action": [
+                "dynamodb:List*",
+                "dynamodb:DescribeReservedCapacity*",
+                "dynamodb:DescribeLimits",
+                "dynamodb:DescribeTimeToLive"
+              ],
+              "Resource": "*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:CreateTable",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+                "dynamodb:GetItem",
+                "dynamodb:PutItem",
+                "dynamodb:Query",
+                "dynamodb:UpdateItem",
+                "dynamodb:Scan",
+                "dynamodb:TagResource",
+                "dynamodb:UntagResource"
+              ],
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:dynamodb:*:*:table/",
+                    {
+                      "Ref": "prefix"
+                    },
+                    "-dynamodb-table"
+                  ]
+                ]
+              }
             }
-
+          ]
+        },
+        "ManagedPolicyName": {
+          "Fn::Join": [
+            "-",
+            [
+              {
+                "Ref": "prefix"
+              },
+              "dynamodb-policy"
+            ]
+          ]
+        }
       }
     },
     "LogPolicy": {
-      "Type" : "AWS::IAM::ManagedPolicy",
-      "Properties" : {
-          "PolicyDocument" : {
-            "Version": "2012-10-17",
-            "Statement": [
-              {
-                "Effect": "Allow",
-                "Action": [
-                  "s3:ListBucket"
-                ],
-                "Resource":
-                  {
-                    "Fn::Join" : [
-                                    "", [
-                                      "arn:aws:s3:::",
-                                      {
-                                        "Ref" : "S3BucketName"
-                                      }
-                                      ]
-                                    ]
-                  }
-              },
-              {
-                "Effect": "Allow",
-                "Action": [
-                  "s3:AbortMultipartUpload",
-                  "s3:GetObject",
-                  "s3:ListMultipartUploadParts",
-                  "s3:PutObject"
-                ],
-                "Resource":
-                {
-                  "Fn::Join" : [
-                                  "", [
-                                    "arn:aws:s3:::",
-                                    {
-                                      "Ref" : "S3BucketName"
-                                    },
-                                    "/logs/*"
-                                    ]
-                                  ]
-                }
-              }
-            ]
-          },
-          "ManagedPolicyName" :
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
             {
-               "Fn::Join" : [
-                              "-", [
-                                {
-                                  "Ref" : "prefix"
-                                },
-                                "log-policy"
-                                ]
-                              ]
+              "Effect": "Allow",
+              "Action": [
+                "s3:ListBucket"
+              ],
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:s3:::",
+                    {
+                      "Ref": "S3BucketName"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "s3:AbortMultipartUpload",
+                "s3:GetObject",
+                "s3:ListMultipartUploadParts",
+                "s3:PutObject"
+              ],
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:s3:::",
+                    {
+                      "Ref": "S3BucketName"
+                    },
+                    "/logs/*"
+                  ]
+                ]
+              }
             }
+          ]
+        },
+        "ManagedPolicyName": {
+          "Fn::Join": [
+            "-",
+            [
+              {
+                "Ref": "prefix"
+              },
+              "log-policy"
+            ]
+          ]
+        }
       }
     },
     "RangerAuditS3Policy": {
-      "Type" : "AWS::IAM::ManagedPolicy",
-      "Properties" : {
-          "PolicyDocument" : {
-            "Version": "2012-10-17",
-            "Statement": [
-              {
-                "Sid": "FullObjectAccessUnderAuditDir",
-                "Effect": "Allow",
-                "Action": [
-                  "s3:GetObject",
-                  "s3:PutObject"
-                ],
-                "Resource":
-                  {
-                    "Fn::Join" : [
-                                    "", [
-                                      "arn:aws:s3:::",
-                                      {
-                                        "Ref" : "S3BucketName"
-                                      },
-                                      "/ranger/audit/*"
-                                      ]
-                                    ]
-                  }
-              },
-              {
-                "Sid": "LimitedAccessToDataLakeBucket",
-                "Effect": "Allow",
-                "Action": [
-                  "s3:AbortMultipartUpload",
-                  "s3:ListBucket",
-                  "s3:ListBucketMultipartUploads"
-                ],
-                "Resource":
-                  {
-                    "Fn::Join" : [
-                                    "", [
-                                      "arn:aws:s3:::",
-                                      {
-                                        "Ref" : "S3BucketName"
-                                      }
-                                      ]
-                                    ]
-                  }
-              }
-            ]
-          },
-          "ManagedPolicyName" :
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
             {
-               "Fn::Join" : [
-                              "-", [
-                                {
-                                  "Ref" : "prefix"
-                                },
-                                "ranger-audit-s3-policy"
-                                ]
-                              ]
+              "Sid": "FullObjectAccessUnderAuditDir",
+              "Effect": "Allow",
+              "Action": [
+                "s3:GetObject",
+                "s3:PutObject"
+              ],
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:s3:::",
+                    {
+                      "Ref": "S3BucketName"
+                    },
+                    "/ranger/audit/*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Sid": "LimitedAccessToDataLakeBucket",
+              "Effect": "Allow",
+              "Action": [
+                "s3:AbortMultipartUpload",
+                "s3:ListBucket",
+                "s3:ListBucketMultipartUploads"
+              ],
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:s3:::",
+                    {
+                      "Ref": "S3BucketName"
+                    }
+                  ]
+                ]
+              }
             }
+          ]
+        },
+        "ManagedPolicyName": {
+          "Fn::Join": [
+            "-",
+            [
+              {
+                "Ref": "prefix"
+              },
+              "ranger-audit-s3-policy"
+            ]
+          ]
+        }
       }
     },
     "DatalakeAdminS3Policy": {
-      "Type" : "AWS::IAM::ManagedPolicy",
-      "Properties" : {
-          "PolicyDocument" : {
-            "Version": "2012-10-17",
-            "Statement": [
-              {
-                "Sid": "VisualEditor3",
-                "Effect": "Allow",
-                "Action": [
-                  "s3:AbortMultipartUpload",
-                  "s3:DeleteObject",
-                  "s3:DeleteObjectVersion",
-                  "s3:GetAccelerateConfiguration",
-                  "s3:GetAnalyticsConfiguration",
-                  "s3:GetBucketAcl",
-                  "s3:GetBucketCORS",
-                  "s3:GetBucketLocation",
-                  "s3:GetBucketLogging",
-                  "s3:GetBucketNotification",
-                  "s3:GetBucketObjectLockConfiguration",
-                  "s3:GetBucketPolicy",
-                  "s3:GetBucketPolicyStatus",
-                  "s3:GetBucketPublicAccessBlock",
-                  "s3:GetBucketRequestPayment",
-                  "s3:GetBucketTagging",
-                  "s3:GetBucketVersioning",
-                  "s3:GetBucketWebsite",
-                  "s3:GetEncryptionConfiguration",
-                  "s3:GetInventoryConfiguration",
-                  "s3:GetLifecycleConfiguration",
-                  "s3:GetMetricsConfiguration",
-                  "s3:GetObject",
-                  "s3:GetObjectAcl",
-                  "s3:GetObjectLegalHold",
-                  "s3:GetObjectRetention",
-                  "s3:GetObjectTagging",
-                  "s3:GetObjectVersion",
-                  "s3:GetObjectVersionAcl",
-                  "s3:GetObjectVersionTagging",
-                  "s3:GetReplicationConfiguration",
-                  "s3:ListBucket",
-                  "s3:ListBucketMultipartUploads",
-                  "s3:ListBucketVersions",
-                  "s3:ListMultipartUploadParts",
-                  "s3:PutObject"
-                ],
-                "Resource":[
-                  {
-                    "Fn::Join" : [
-                                    "", [
-                                      "arn:aws:s3:::",
-                                      {
-                                        "Ref" : "S3BucketName"
-                                      }
-                                      ]
-                                    ]
-                  },
-                  {
-                    "Fn::Join" : [
-                                    "", [
-                                      "arn:aws:s3:::",
-                                      {
-                                        "Ref" : "S3BucketName"
-                                      },
-                                      "/*"
-                                      ]
-                                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          "ManagedPolicyName" :
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
             {
-               "Fn::Join" : [
-                              "-", [
-                                {
-                                  "Ref" : "prefix"
-                                },
-                                "datalake-admin-s3-policy"
-                                ]
-                              ]
+              "Sid": "VisualEditor3",
+              "Effect": "Allow",
+              "Action": [
+                "s3:AbortMultipartUpload",
+                "s3:DeleteObject",
+                "s3:DeleteObjectVersion",
+                "s3:GetAccelerateConfiguration",
+                "s3:GetAnalyticsConfiguration",
+                "s3:GetBucketAcl",
+                "s3:GetBucketCORS",
+                "s3:GetBucketLocation",
+                "s3:GetBucketLogging",
+                "s3:GetBucketNotification",
+                "s3:GetBucketObjectLockConfiguration",
+                "s3:GetBucketPolicy",
+                "s3:GetBucketPolicyStatus",
+                "s3:GetBucketPublicAccessBlock",
+                "s3:GetBucketRequestPayment",
+                "s3:GetBucketTagging",
+                "s3:GetBucketVersioning",
+                "s3:GetBucketWebsite",
+                "s3:GetEncryptionConfiguration",
+                "s3:GetInventoryConfiguration",
+                "s3:GetLifecycleConfiguration",
+                "s3:GetMetricsConfiguration",
+                "s3:GetObject",
+                "s3:GetObjectAcl",
+                "s3:GetObjectLegalHold",
+                "s3:GetObjectRetention",
+                "s3:GetObjectTagging",
+                "s3:GetObjectVersion",
+                "s3:GetObjectVersionAcl",
+                "s3:GetObjectVersionTagging",
+                "s3:GetReplicationConfiguration",
+                "s3:ListBucket",
+                "s3:ListBucketMultipartUploads",
+                "s3:ListBucketVersions",
+                "s3:ListMultipartUploadParts",
+                "s3:PutObject"
+              ],
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "S3BucketName"
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "S3BucketName"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
             }
+          ]
+        },
+        "ManagedPolicyName": {
+          "Fn::Join": [
+            "-",
+            [
+              {
+                "Ref": "prefix"
+              },
+              "datalake-admin-s3-policy"
+            ]
+          ]
+        }
       }
     },
     "IDBrokerRole": {
-      "Type" : "AWS::IAM::Role",
-      "Properties" : {
-          "AssumeRolePolicyDocument" :{
-            "Version": "2012-10-17",
-            "Statement": [
-              {
-                "Effect": "Allow",
-                "Principal": {
-                  "Service": "ec2.amazonaws.com"
-                },
-                "Action": "sts:AssumeRole"
-              }
-            ]
-          },
-          "Description" : "allows cdp to assume roles",
-          "ManagedPolicyArns" : [{"Ref": "IDbrokerAssumeRolePolicy"} ],
-          "RoleName" :
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
             {
-               "Fn::Join" : [
-                              "-", [
-                                {
-                                  "Ref" : "prefix"
-                                },
-                                "idbroker-role"
-                                ]
-                              ]
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ec2.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
             }
+          ]
+        },
+        "Description": "allows cdp to assume roles",
+        "ManagedPolicyArns": [
+          {
+            "Ref": "IDbrokerAssumeRolePolicy"
+          }
+        ],
+        "RoleName": {
+          "Fn::Join": [
+            "-",
+            [
+              {
+                "Ref": "prefix"
+              },
+              "idbroker-role"
+            ]
+          ]
+        }
       },
-      "DependsOn" : "IDbrokerAssumeRolePolicy"
+      "DependsOn": "IDbrokerAssumeRolePolicy"
     },
     "LogRole": {
-      "Type" : "AWS::IAM::Role",
-      "Properties" : {
-          "AssumeRolePolicyDocument" :{
-            "Version": "2012-10-17",
-            "Statement": [
-              {
-                "Effect": "Allow",
-                "Principal": {
-                  "Service": "ec2.amazonaws.com"
-                },
-                "Action": "sts:AssumeRole"
-              }
-            ]
-          },
-          "Description" : "used by CDP to write logs",
-          "ManagedPolicyArns" : [{"Ref": "LogPolicy"} ],
-          "RoleName" :
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
             {
-               "Fn::Join" : [
-                              "-", [
-                                {
-                                  "Ref" : "prefix"
-                                },
-                                "log-role"
-                                ]
-                              ]
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ec2.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
             }
+          ]
+        },
+        "Description": "used by CDP to write logs",
+        "ManagedPolicyArns": [
+          {
+            "Ref": "LogPolicy"
+          }
+        ],
+        "RoleName": {
+          "Fn::Join": [
+            "-",
+            [
+              {
+                "Ref": "prefix"
+              },
+              "log-role"
+            ]
+          ]
+        }
       },
-      "DependsOn" : "LogPolicy"
+      "DependsOn": "LogPolicy"
     },
     "RangerAuditRole": {
-      "Type" : "AWS::IAM::Role",
-      "Properties" : {
-          "AssumeRolePolicyDocument" :{
-            "Version": "2012-10-17",
-            "Statement": [
-              {
-                "Effect": "Allow",
-                "Principal": {
-                  "AWS":
-                    {
-                       "Fn::Join" : [
-                                      "", [
-                                        "arn:aws:iam::",
-                                        {
-                                          "Ref" : "AWSAccount"
-                                        },
-                                        ":role/",
-                                        {
-                                          "Ref" : "prefix"
-                                        },
-                                        "-idbroker-role"
-                                        ]
-                                      ]
-                    }
-
-                },
-                "Action": "sts:AssumeRole"
-              }
-            ]
-          },
-          "Description" : "Used by CDP to write ranger audits",
-          "ManagedPolicyArns" : [{"Ref": "RangerAuditS3Policy"},{"Ref": "BucketAccessPolicy"},{"Ref": "DynamoDBPolicy"} ],
-          "RoleName" :
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
             {
-               "Fn::Join" : [
-                              "-", [
-                                {
-                                  "Ref" : "prefix"
-                                },
-                                "ranger-audit-role"
-                                ]
-                              ]
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:iam::",
+                      {
+                        "Ref": "AWSAccount"
+                      },
+                      ":role/",
+                      {
+                        "Ref": "prefix"
+                      },
+                      "-idbroker-role"
+                    ]
+                  ]
+                }
+              },
+              "Action": "sts:AssumeRole"
             }
+          ]
+        },
+        "Description": "Used by CDP to write ranger audits",
+        "ManagedPolicyArns": [
+          {
+            "Ref": "RangerAuditS3Policy"
+          },
+          {
+            "Ref": "BucketAccessPolicy"
+          },
+          {
+            "Ref": "DynamoDBPolicy"
+          }
+        ],
+        "RoleName": {
+          "Fn::Join": [
+            "-",
+            [
+              {
+                "Ref": "prefix"
+              },
+              "ranger-audit-role"
+            ]
+          ]
+        }
       },
-      "DependsOn" : ["IDBrokerRole", "RangerAuditS3Policy", "BucketAccessPolicy", "DynamoDBPolicy"]
+      "DependsOn": [
+        "IDBrokerRole",
+        "RangerAuditS3Policy",
+        "BucketAccessPolicy",
+        "DynamoDBPolicy"
+      ]
     },
     "DatalakeAdminRole": {
-      "Type" : "AWS::IAM::Role",
-      "Properties" : {
-          "AssumeRolePolicyDocument" :{
-            "Version": "2012-10-17",
-            "Statement": [
-              {
-                "Effect": "Allow",
-                "Principal": {
-                  "AWS":
-                    {
-                       "Fn::Join" : [
-                                      "", [
-                                        "arn:aws:iam::",
-                                        {
-                                          "Ref" : "AWSAccount"
-                                        },
-                                        ":role/",
-                                        {
-                                          "Ref" : "IDBrokerRole"
-                                        }
-                                        ]
-                                      ]
-                    }
-
-                },
-                "Action": "sts:AssumeRole"
-              }
-            ]
-          },
-          "Description" : "Map to Datalake Admin Group",
-          "ManagedPolicyArns" : [{"Ref": "DatalakeAdminS3Policy"},{"Ref": "BucketAccessPolicy"},{"Ref": "DynamoDBPolicy"} ],
-          "RoleName" :
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
             {
-               "Fn::Join" : [
-                              "-", [
-                                {
-                                  "Ref" : "prefix"
-                                },
-                                "datalake-admin-role"
-                                ]
-                              ]
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:iam::",
+                      {
+                        "Ref": "AWSAccount"
+                      },
+                      ":role/",
+                      {
+                        "Ref": "IDBrokerRole"
+                      }
+                    ]
+                  ]
+                }
+              },
+              "Action": "sts:AssumeRole"
             }
+          ]
+        },
+        "Description": "Map to Datalake Admin Group",
+        "ManagedPolicyArns": [
+          {
+            "Ref": "DatalakeAdminS3Policy"
+          },
+          {
+            "Ref": "BucketAccessPolicy"
+          },
+          {
+            "Ref": "DynamoDBPolicy"
+          }
+        ],
+        "RoleName": {
+          "Fn::Join": [
+            "-",
+            [
+              {
+                "Ref": "prefix"
+              },
+              "datalake-admin-role"
+            ]
+          ]
+        }
       },
-      "DependsOn" : "IDBrokerRole"
+      "DependsOn": "IDBrokerRole"
     },
     "DataAccessInstanceProfile": {
-    "Type" : "AWS::IAM::InstanceProfile",
-    "Properties" : {
-        "InstanceProfileName" :
-            {
-               "Fn::Join" : [
-                              "-", [
-                                {
-                                  "Ref" : "prefix"
-                                },
-                                "data-access-instance-profile"
-                                ]
-                              ]
-            },
-        "Roles" : [{"Ref" : "IDBrokerRole"}]
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "InstanceProfileName": {
+          "Fn::Join": [
+            "-",
+            [
+              {
+                "Ref": "prefix"
+              },
+              "data-access-instance-profile"
+            ]
+          ]
+        },
+        "Roles": [
+          {
+            "Ref": "IDBrokerRole"
+          }
+        ]
       },
-      "DependsOn" : "IDBrokerRole"
+      "DependsOn": "IDBrokerRole"
     },
     "LogAccessInstanceProfile": {
-    "Type" : "AWS::IAM::InstanceProfile",
-    "Properties" : {
-        "InstanceProfileName" :
-            {
-               "Fn::Join" : [
-                              "-", [
-                                {
-                                  "Ref" : "prefix"
-                                },
-                                "log-access-instance-profile"
-                                ]
-                              ]
-            },
-        "Roles" : [{"Ref" : "LogRole"}]
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "InstanceProfileName": {
+          "Fn::Join": [
+            "-",
+            [
+              {
+                "Ref": "prefix"
+              },
+              "log-access-instance-profile"
+            ]
+          ]
+        },
+        "Roles": [
+          {
+            "Ref": "LogRole"
+          }
+        ]
       },
-      "DependsOn" : "LogRole"
+      "DependsOn": "LogRole"
+    },
+    "CdpKey": {
+      "Condition": "kms",
+      "Type": "AWS::KMS::Key",
+      "Properties": {
+        "Description": "CDP KMS Key for use with S3",
+        "KeyPolicy": {
+          "Version": "2012-10-17",
+          "Id": "key-cdp-1",
+          "Statement": [
+            {
+              "Sid": "Enable IAM User Permissions",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": 
+                  { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:root" }
+              },
+              "Action": "kms:*",
+              "Resource": "*"
+            },
+            {
+              "Sid": "Allow administration of the key",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": [
+                  { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:root" }
+                ]
+              },
+              "Action": [
+                "kms:Create*",
+                "kms:Describe*",
+                "kms:Enable*",
+                "kms:List*",
+                "kms:Put*",
+                "kms:Update*",
+                "kms:Revoke*",
+                "kms:Disable*",
+                "kms:Get*",
+                "kms:Delete*",
+                "kms:ScheduleKeyDeletion",
+                "kms:CancelKeyDeletion"
+              ],
+              "Resource": "*"
+            },
+            {
+              "Sid": "Allow use of the key",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": [
+                  { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:root" }, 
+                  { "Fn::GetAtt": [ "LogRole", "Arn" ] },
+                  { "Fn::GetAtt": [ "RangerAuditRole", "Arn" ] },
+                  { "Fn::GetAtt": [ "DatalakeAdminRole", "Arn" ] }
+                ]
+              },
+              "Action": [
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:Decrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey",
+                "kms:GenerateDataKeyWithoutPlaintext"
+              ],
+              "Resource": "*"
+            }
+          ]
+        }
+      }
+    },
+    "AwsCdpSseKmsReadWritePolicy": {
+      "Condition": "kms",
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "VisualEditor0",
+              "Effect": "Allow",
+              "Action": [
+                "kms:Decrypt",
+                "kms:GenerateDataKey"
+              ],
+              "Resource": [
+                { "Fn::GetAtt": [ "CdpKey", "Arn" ]}
+              ]
+            }
+          ]
+        },
+        "ManagedPolicyName": {
+          "Fn::Join": [
+            "_",
+            [
+              {
+                "Ref": "prefix"
+              },
+              "aws-cdp-sse-kms-read-write-policy"
+            ]
+          ]
+        },
+        "Roles": [
+          { "Ref": "LogRole" },
+          { "Ref": "RangerAuditRole" },
+          { "Ref": "DatalakeAdminRole" }
+        ]
+      }
     }
   }
 }
