@@ -789,5 +789,44 @@
         ]
       }
     }
+  },
+  "Outputs": {
+    "LogInstanceProfile": {
+      "Description": "Log Instance Profile Name",
+      "Value": { "Ref" : "LogAccessInstanceProfile" }
+    },
+    "LogsLocationBase": {
+      "Description": "S3 path for log directory",
+      "Value": { "Fn::Join": [ "/", [ { "Ref" : "S3BucketName" }, "logs/" ] ] }
+    },
+    "RangerAuditRole": {
+      "Description": "Ranger Audit Role Name",
+      "Value": { "Ref" : "RangerAuditRole" }
+    },
+    "DataInstanceProfile": {
+      "Description": "Data Access Instance Profile Name",
+      "Value": { "Ref" : "DataAccessInstanceProfile" }
+    },
+    "StorageLocationBase": {
+      "Description": "S3 path for data directory",
+      "Value": { "Ref" : "S3BucketName" }
+    },
+    "DataAccessRole": {
+      "Description": "Data Access Role Name",
+      "Value": { "Ref" : "DatalakeAdminRole" }
+    },
+    "DyanmoDbTableName": {
+      "Description": "Data Access Role Name",
+      "Value": {
+        "Fn::Join" : [
+          "", [
+            {
+              "Ref" : "prefix"
+            },
+            "-dynamodb-table"
+            ]
+          ]
+        }
+    }
   }
 }
