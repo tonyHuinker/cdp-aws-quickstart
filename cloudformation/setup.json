@@ -3,7 +3,12 @@
     "S3BucketName": {
       "Type": "String",
       "Default": "replace-me",
-      "Description": "New S3 Bucket w/ Default Encryption for ÇDP"
+      "Description": "New S3 Bucket w/ Default Encryption for CDP"
+    },
+    "S3Path": {
+      "Type": "String",
+      "Default": "/my-dl",
+      "Description": "Path for the datalake"
     },
     "AWSAccount": {
       "Type": "String",
@@ -272,7 +277,6 @@
               "Effect": "Allow",
               "Action": [
                 "s3:AbortMultipartUpload",
-                "s3:GetObject",
                 "s3:ListMultipartUploadParts",
                 "s3:PutObject"
               ],
@@ -284,7 +288,10 @@
                     {
                       "Ref": "S3BucketName"
                     },
-                    "/logs/*"
+                    {
+                      "Ref": "S3Path"
+                    },
+                    "/*"
                   ]
                 ]
               }
@@ -324,6 +331,9 @@
                     "arn:aws:s3:::",
                     {
                       "Ref": "S3BucketName"
+                    },
+                    {
+                      "Ref": "S3Path"
                     },
                     "/ranger/audit/*"
                   ]
@@ -797,7 +807,7 @@
     },
     "LogsLocationBase": {
       "Description": "S3 path for log directory",
-      "Value": { "Fn::Join": [ "/", [ { "Ref" : "S3BucketName" }, "logs/" ] ] }
+      "Value": { "Fn::Join": [ "", [ { "Ref" : "S3BucketName" }, { "Ref" : "S3Path" }, "/" ] ] }
     },
     "RangerAuditRole": {
       "Description": "Ranger Audit Role Name",
@@ -809,7 +819,7 @@
     },
     "StorageLocationBase": {
       "Description": "S3 path for data directory",
-      "Value": { "Ref" : "S3BucketName" }
+      "Value": { "Fn::Join": [ "", [ { "Ref" : "S3BucketName" }, { "Ref" : "S3Path" }, "/" ] ] }
     },
     "DataAccessRole": {
       "Description": "Data Access Role Name",
