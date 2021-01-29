@@ -77,7 +77,6 @@ In order to complete this quickstart, you'll need access to two things.
      6. Enter your stack name.  This can be any valid name.  Below you should change
         - S3BucketName - choose an unused bucket name, CDP will be creating the bucket for you
         - S3Path - choose the path inside the bucket
-        - AWSAccount - your 12 digit AWS account ID (can be found [here](https://console.aws.amazon.com/billing/home?#/account)). 
         - prefix - a short prefix of your choosing to add to the names of the IAM resources we'll be creating.
 
         ![parsed](screenshots/stackparsed.png?raw=true)

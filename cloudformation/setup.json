@@ -10,13 +10,6 @@
       "Default": "/my-dl",
       "Description": "Path for the datalake"
     },
-    "AWSAccount": {
-      "Type": "String",
-      "Default": "111111111111",
-      "MaxLength": 12,
-      "MinLength": 12,
-      "Description": "Your AWS Account ID, 12 digit number"
-    },
     "prefix": {
       "Type": "String",
       "Default": "replace-me",
@@ -548,7 +541,7 @@
                     [
                       "arn:aws:iam::",
                       {
-                        "Ref": "AWSAccount"
+                        "Ref": "AWS::AccountId"
                       },
                       ":role/",
                       {
@@ -609,7 +602,7 @@
                     [
                       "arn:aws:iam::",
                       {
-                        "Ref": "AWSAccount"
+                        "Ref": "AWS::AccountId"
                       },
                       ":role/",
                       {
