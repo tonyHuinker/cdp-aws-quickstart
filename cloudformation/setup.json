@@ -423,6 +423,9 @@
                       "arn:aws:s3:::",
                       {
                         "Ref": "S3BucketName"
+                      },
+                      {
+                        "Ref": "S3Path"
                       }
                     ]
                   ]
@@ -434,6 +437,9 @@
                       "arn:aws:s3:::",
                       {
                         "Ref": "S3BucketName"
+                      },
+                      {
+                        "Ref": "S3Path"
                       },
                       "/*"
                     ]
