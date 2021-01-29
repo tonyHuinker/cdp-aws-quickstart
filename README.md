@@ -75,8 +75,8 @@ In order to complete this quickstart, you'll need access to two things.
      4. Select the template file you just downloaded.
      5. Click **Next**
      6. Enter your stack name.  This can be any valid name.  Below you should change
-        - S3BucketName - choose an unused bucket name, CDP will be creating the bucket for you
-        - S3Path - choose the path inside the bucket
+        - LogsLocationBase - choose an unused bucket name and path for the logs, CDP will be creating the bucket for you. The same bueckt can be used for both LogsLocationBase and StorageLocationBase.
+        - StorageLocationBase - choose an unused bucket name and path for the data, CDP will be creating the bucket for you. The same bueckt can be used for both LogsLocationBase and StorageLocationBase.
         - prefix - a short prefix of your choosing to add to the names of the IAM resources we'll be creating.
 
         ![parsed](screenshots/stackparsed.png?raw=true)
@@ -106,7 +106,7 @@ In order to complete this quickstart, you'll need access to two things.
     5. Under *Amazon Web Services Credential*, chose the credential we created earlier. 
     6. Click **Next**
     7. Under *Data Lake Settings*, give your new Data Lake a name.  The name can be any valid name. Choose the latest Data Lake Version
-    8.  Under *Data Access*, choose the **prefix-data-access-instance-profile**, for *Storage Location Base* choose **S3Bucketname**/**S3Path**.
+    8.  Under *Data Access*, choose the **prefix-data-access-instance-profile**, for *Storage Location Base* choose the same **StorageLocationBase** from the cloud formation template.
 
         ![data](screenshots/data.png?raw=true)
 
@@ -122,7 +122,7 @@ In order to complete this quickstart, you'll need access to two things.
         ![dynamo](screenshots/dynamo.png?raw=true)
 
     16. (optional) Provide any tags you'd like these resources to be tagged with. 
-    17. Under *Logs - Storage and Audit*, choose the Instance Profile we mentioned to save earlier, titled **prefix-log-access-instance-profile**, for logs location base choose **S3BucketName/S3Path**, and for *Ranger Audit Role* choose **prefix-ranger-audit-role**
+    17. Under *Logs - Storage and Audit*, choose the Instance Profile we mentioned to save earlier, titled **prefix-log-access-instance-profile**, for logs location base choose the same **LogsLocationBase** from the cloud formation template, and for *Ranger Audit Role* choose **prefix-ranger-audit-role**
 
         ![logs](screenshots/logs.png?raw=true)
 
