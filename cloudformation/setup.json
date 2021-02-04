@@ -1,26 +1,19 @@
 {
   "Parameters": {
-    "S3BucketName": {
+    "StorageLocationBase": {
       "Type": "String",
-      "Default": "replace-me",
-      "Description": "New S3 Bucket w/ Default Encryption for CDP"
+      "Default": "my-bucket/my-dl",
+      "Description": "The logging base path to create an S3 bucket with default encryption for CDP. By default CDP will create the optional subdirectory in the bucket. It is possible to either use the same bucket or different buckets for StorageLocationBase and LogsLocationBase."
     },
-    "S3Path": {
+    "LogsLocationBase": {
       "Type": "String",
-      "Default": "/my-dl",
-      "Description": "Path for the datalake"
-    },
-    "AWSAccount": {
-      "Type": "String",
-      "Default": "111111111111",
-      "MaxLength": 12,
-      "MinLength": 12,
-      "Description": "Your AWS Account ID, 12 digit number"
+      "Default": "my-bucket/my-dl",
+      "Description": "The storage base path to create an S3 bucket with default encryption for CDP. By default CDP will create the optional subdirectory in the bucket. It is possible to either use the same bucket or different buckets for StorageLocationBase and LogsLocationBase."
     },
     "prefix": {
       "Type": "String",
       "Default": "replace-me",
-      "Description": "prefix for IAM objects, sep by a dash.  Dynamo table will be prefix-dynamodb-table"
+      "Description": "prefix for IAM objects, separated by a dash.  Dynamo table will be prefix-dynamodb-table"
     },
     "s3KmsEncyption": {
       "Type": "String",
@@ -32,18 +25,28 @@
     "kms": {
       "Fn::Equals": [
         { "Ref": "s3KmsEncyption" },
-      true
+        true
+      ]
+    },
+    "needBucket2": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            { "Fn::Select" : [ "0", { "Fn::Split" : [ "/", { "Ref": "LogsLocationBase" } ] } ] },
+            { "Fn::Select" : [ "0", { "Fn::Split" : [ "/", { "Ref": "StorageLocationBase" } ] } ] }
+          ]
+        }
       ]
     }
   },
   "Resources": {
-    "CDPS3Bucket": {
+    "CDPS3Bucket1": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketEncryption": {
           "ServerSideEncryptionConfiguration": [
             {
-              "ServerSideEncryptionByDefault": { 
+              "ServerSideEncryptionByDefault": {
                 "Fn::If": [
                   "kms",
                   {
@@ -59,7 +62,40 @@
           ]
         },
         "BucketName": {
-          "Ref": "S3BucketName"
+          "Fn::Select" : [ "0", { "Fn::Split" : [ "/", { "Ref": "LogsLocationBase" } ] } ]
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        }
+      }
+    },
+    "CDPS3Bucket2": {
+      "Type": "AWS::S3::Bucket",
+      "Condition": "needBucket2",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "Fn::If": [
+                  "kms",
+                  {
+                    "SSEAlgorithm": "aws:kms",
+                    "KMSMasterKeyID": { "Ref": "CdpKey" }
+                  },
+                  {
+                    "SSEAlgorithm": "AES256"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "BucketName": {
+          "Fn::Select" : [ "0", { "Fn::Split" : [ "/", { "Ref": "StorageLocationBase" } ] } ]
         },
         "PublicAccessBlockConfiguration": {
           "BlockPublicAcls": true,
@@ -156,7 +192,7 @@
                     [
                       "arn:aws:s3:::",
                       {
-                        "Ref": "S3BucketName"
+                        "Fn::Select" : [ "0", { "Fn::Split" : [ "/", { "Ref": "StorageLocationBase" } ] } ]
                       }
                     ]
                   ]
@@ -167,7 +203,7 @@
                     [
                       "arn:aws:s3:::",
                       {
-                        "Ref": "S3BucketName"
+                        "Fn::Select" : [ "0", { "Fn::Split" : [ "/", { "Ref": "StorageLocationBase" } ] } ]
                       },
                       "/*"
                     ]
@@ -267,7 +303,7 @@
                   [
                     "arn:aws:s3:::",
                     {
-                      "Ref": "S3BucketName"
+                      "Fn::Select" : [ "0", { "Fn::Split" : [ "/", { "Ref": "LogsLocationBase" } ] } ]
                     }
                   ]
                 ]
@@ -286,10 +322,7 @@
                   [
                     "arn:aws:s3:::",
                     {
-                      "Ref": "S3BucketName"
-                    },
-                    {
-                      "Ref": "S3Path"
+                      "Ref": "LogsLocationBase"
                     },
                     "/*"
                   ]
@@ -330,10 +363,7 @@
                   [
                     "arn:aws:s3:::",
                     {
-                      "Ref": "S3BucketName"
-                    },
-                    {
-                      "Ref": "S3Path"
+                      "Ref": "StorageLocationBase"
                     },
                     "/ranger/audit/*"
                   ]
@@ -354,7 +384,7 @@
                   [
                     "arn:aws:s3:::",
                     {
-                      "Ref": "S3BucketName"
+                      "Fn::Select" : [ "0", { "Fn::Split" : [ "/", { "Ref": "StorageLocationBase" } ] } ]
                     }
                   ]
                 ]
@@ -429,7 +459,7 @@
                     [
                       "arn:aws:s3:::",
                       {
-                        "Ref": "S3BucketName"
+                        "Ref": "StorageLocationBase"
                       }
                     ]
                   ]
@@ -440,7 +470,7 @@
                     [
                       "arn:aws:s3:::",
                       {
-                        "Ref": "S3BucketName"
+                        "Ref": "StorageLocationBase"
                       },
                       "/*"
                     ]
@@ -548,13 +578,12 @@
                     [
                       "arn:aws:iam::",
                       {
-                        "Ref": "AWSAccount"
+                        "Ref": "AWS::AccountId"
                       },
                       ":role/",
                       {
-                        "Ref": "prefix"
-                      },
-                      "-idbroker-role"
+                        "Ref": "IDBrokerRole"
+                      }
                     ]
                   ]
                 }
@@ -609,7 +638,7 @@
                     [
                       "arn:aws:iam::",
                       {
-                        "Ref": "AWSAccount"
+                        "Ref": "AWS::AccountId"
                       },
                       ":role/",
                       {
@@ -706,7 +735,7 @@
               "Sid": "Enable IAM User Permissions",
               "Effect": "Allow",
               "Principal": {
-                "AWS": 
+                "AWS":
                   { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:root" }
               },
               "Action": "kms:*",
@@ -741,7 +770,7 @@
               "Effect": "Allow",
               "Principal": {
                 "AWS": [
-                  { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:root" }, 
+                  { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:root" },
                   { "Fn::GetAtt": [ "LogRole", "Arn" ] },
                   { "Fn::GetAtt": [ "RangerAuditRole", "Arn" ] },
                   { "Fn::GetAtt": [ "DatalakeAdminRole", "Arn" ] }
@@ -807,7 +836,7 @@
     },
     "LogsLocationBase": {
       "Description": "S3 path for log directory",
-      "Value": { "Fn::Join": [ "", [ { "Ref" : "S3BucketName" }, { "Ref" : "S3Path" }, "/" ] ] }
+      "Value": { "Ref" : "LogsLocationBase" }
     },
     "RangerAuditRole": {
       "Description": "Ranger Audit Role Name",
@@ -819,7 +848,7 @@
     },
     "StorageLocationBase": {
       "Description": "S3 path for data directory",
-      "Value": { "Fn::Join": [ "", [ { "Ref" : "S3BucketName" }, { "Ref" : "S3Path" }, "/" ] ] }
+      "Value": { "Ref" : "StorageLocationBase" }
     },
     "DataAccessRole": {
       "Description": "Data Access Role Name",
